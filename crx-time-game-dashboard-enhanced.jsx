@@ -123,7 +123,7 @@ const TimeGameDashboard = () => {
       keyMetric: 'Profit Margin Increase',
       problem: 'Retail businesses blindly discounting, destroying margins.',
       solution: 'Power BI dashboard analyzing 500K+ sales records.',
-      github: 'https://github.com/Chetan0075/superstore-analysis',
+      github: 'https://github.com/Chetan0075/sales-performance-analysis',
     },
     {
       id: 1,
@@ -135,7 +135,7 @@ const TimeGameDashboard = () => {
       keyMetric: 'Cost Reduction',
       problem: 'IT projects overrun. 40% from unidentified bottlenecks.',
       solution: 'SQL + Python + ML pipeline for delay prediction.',
-      github: 'https://github.com/Chetan0075/workflow-optimization',
+      github: 'https://github.com/Chetan0075/Workflow-Optimization-Predictive-Analytics',
     },
     {
       id: 2,
@@ -147,7 +147,7 @@ const TimeGameDashboard = () => {
       keyMetric: 'Inventory Risk Reduction',
       problem: 'Retail demand unpredictable. Inventory planning reactive.',
       solution: 'Custom DVI metric + shock detection Power BI dashboard.',
-      github: 'https://github.com/Chetan0075/demand-volatility-index',
+      github: 'https://github.com/Chetan0075/demand-volatility-index-india',
     },
   ];
 
