@@ -11,4 +11,4 @@ Users enter their date of birth and unlock projects based on the number of days 
 live website link : https://agent-6a0bd6798cf1adb4--chetan-suraswal-portolio.netlify.app/
 
 ```bash
-[https://yourusername.github.io/repository-name](https://github.com/Chetan0075/Web-of-Data-Analyst)
+https://github.com/Chetan0075/Web-of-Data-Analyst/tree/main
