@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, ArrowRight, Lock, Unlock, Zap, TrendingUp, Rocket } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowRight, Lock, Unlock, Zap, TrendingUp, Rocket, Activity } from 'lucide-react';
 
 const TimeGameDashboard = () => {
   const [dob, setDob] = useState(null);
@@ -13,22 +13,31 @@ const TimeGameDashboard = () => {
     years: 0,
     months: 0,
   });
-  const [timeStats, setTimeStats] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    years: 0,
-    months: 0,
+  // Store elapsed seconds since DOB was entered - this drives the metrics
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+  const [baseLifeMetrics, setBaseLifeMetrics] = useState({
+    heartbeats: 0,
+    breaths: 0,
+    steps: 0,
+    words: 0,
   });
   const [unlockedProjects, setUnlockedProjects] = useState(new Set());
-  const chartRef = useRef(null);
-  const chartInstanceRef = useRef(null);
+  const [lifeProgress, setLifeProgress] = useState({
+    currentYears: 0,
+    averageLifespan: 75,
+    percentageLived: 0,
+    yearsRemaining: 0,
+  });
+  const chartRef1 = useRef(null);
+  const chartRef2 = useRef(null);
+  const chartInstanceRef1 = useRef(null);
+  const chartInstanceRef2 = useRef(null);
 
+  // Main time calculation - updates every second
   useEffect(() => {
     if (!dob) return;
 
-    const updateTime = () => {
+    const calculateAndUpdate = () => {
       const now = new Date();
       const birth = new Date(dob);
       const diff = now - birth;
@@ -45,19 +54,31 @@ const TimeGameDashboard = () => {
         months += 12;
       }
 
-      setTimeStats({ days, hours, minutes, seconds, years, months });
+      setDisplayedStats({ days, hours, minutes, seconds, years, months });
 
-      // Update displayed stats with smooth counting
-      setDisplayedStats((prev) => ({
-        years: years,
-        months: months,
-        days: days,
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-      }));
+      // Initialize base metrics once
+      if (baseLifeMetrics.heartbeats === 0 && days > 0) {
+        setBaseLifeMetrics({
+          heartbeats: Math.floor(days * 86400 * 1.2),
+          breaths: Math.floor(days * 86400 * 0.27),
+          steps: Math.floor(days * 10000),
+          words: Math.floor(days * 16000),
+        });
+      }
 
-      // Unlock projects based on time lived OR force unlock
+      // Calculate life progress
+      const averageLifespan = 75;
+      const percentageLived = Math.min((years / averageLifespan) * 100, 100);
+      const yearsRemaining = Math.max(averageLifespan - years, 0);
+
+      setLifeProgress({
+        currentYears: years,
+        averageLifespan,
+        percentageLived,
+        yearsRemaining,
+      });
+
+      // Unlock projects
       const newUnlocked = new Set();
       if (forceUnlock) {
         newUnlocked.add(0);
@@ -71,46 +92,104 @@ const TimeGameDashboard = () => {
       setUnlockedProjects(newUnlocked);
     };
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
+    calculateAndUpdate();
+    const interval = setInterval(calculateAndUpdate, 1000);
     return () => clearInterval(interval);
   }, [dob, forceUnlock]);
 
-  // Initialize chart when stats are ready
+  // Separate interval to increment the counter every second
   useEffect(() => {
-    if (dob && typeof window !== 'undefined' && displayedStats.days > 0 && !chartInstanceRef.current) {
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
-      script.onload = () => {
-        if (chartRef.current && window.Chart) {
-          const ctx = chartRef.current.getContext('2d');
-          chartInstanceRef.current = new window.Chart(ctx, {
-            type: 'doughnut',
+    if (!dob) return;
+
+    const interval = setInterval(() => {
+      setSecondsElapsed((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [dob]);
+
+  // Calculate live metrics based on base + elapsed seconds
+  const getLiveMetrics = () => {
+    return {
+      heartbeats: baseLifeMetrics.heartbeats + secondsElapsed * 1.2,
+      breaths: baseLifeMetrics.breaths + secondsElapsed * 0.27,
+      steps: baseLifeMetrics.steps + secondsElapsed * 0.12,
+      words: baseLifeMetrics.words + secondsElapsed * 0.19,
+    };
+  };
+
+  const liveMetrics = getLiveMetrics();
+
+  // Initialize charts
+  useEffect(() => {
+    if (!dob || lifeProgress.currentYears === 0) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+    script.onload = () => {
+      if (window.Chart) {
+        // Chart 1: Life Progress Bar
+        if (chartRef1.current && !chartInstanceRef1.current) {
+          const ctx1 = chartRef1.current.getContext('2d');
+          chartInstanceRef1.current = new window.Chart(ctx1, {
+            type: 'bar',
             data: {
-              labels: ['Years', 'Months', 'Days', 'Hours'],
-              datasets: [{
-                data: [
-                  displayedStats.years * 365,
-                  displayedStats.months * 30,
-                  displayedStats.days,
-                  displayedStats.hours
-                ],
-                backgroundColor: ['#8b5cf6', '#06b6d4', '#3b82f6', '#ec4899'],
-                borderColor: ['#fff', '#fff', '#fff', '#fff'],
-                borderWidth: 3,
-              }],
+              labels: ['Your Age', 'Remaining'],
+              datasets: [
+                {
+                  label: 'Years',
+                  data: [lifeProgress.currentYears, lifeProgress.yearsRemaining],
+                  backgroundColor: ['#8b5cf6', '#e5e7eb'],
+                  borderRadius: 8,
+                  borderSkipped: false,
+                },
+              ],
             },
             options: {
+              indexAxis: 'y',
               responsive: true,
-              maintainAspectRatio: false,
+              maintainAspectRatio: true,
               plugins: { legend: { display: false } },
+              scales: {
+                x: {
+                  max: lifeProgress.averageLifespan,
+                  stacked: true,
+                },
+              },
             },
           });
         }
-      };
-      document.head.appendChild(script);
-    }
-  }, [dob, displayedStats]);
+
+        // Chart 2: Age Comparison
+        if (chartRef2.current && !chartInstanceRef2.current) {
+          const ctx2 = chartRef2.current.getContext('2d');
+          chartInstanceRef2.current = new window.Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+              labels: ['Life Lived', 'Life Remaining'],
+              datasets: [
+                {
+                  data: [
+                    lifeProgress.percentageLived,
+                    100 - lifeProgress.percentageLived,
+                  ],
+                  backgroundColor: ['#8b5cf6', '#f3f4f6'],
+                  borderColor: ['#fff', '#fff'],
+                  borderWidth: 3,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: { legend: { display: true, position: 'bottom' } },
+            },
+          });
+        }
+      }
+    };
+    document.head.appendChild(script);
+  }, [dob, lifeProgress]);
 
   const projects = [
     {
@@ -123,7 +202,7 @@ const TimeGameDashboard = () => {
       keyMetric: 'Profit Margin Increase',
       problem: 'Retail businesses blindly discounting, destroying margins.',
       solution: 'Power BI dashboard analyzing 500K+ sales records.',
-      github: 'https://github.com/Chetan0075/sales-performance-analysis',
+      github: 'https://github.com/Chetan0075/superstore-analysis',
     },
     {
       id: 1,
@@ -135,7 +214,7 @@ const TimeGameDashboard = () => {
       keyMetric: 'Cost Reduction',
       problem: 'IT projects overrun. 40% from unidentified bottlenecks.',
       solution: 'SQL + Python + ML pipeline for delay prediction.',
-      github: 'https://github.com/Chetan0075/Workflow-Optimization-Predictive-Analytics',
+      github: 'https://github.com/Chetan0075/workflow-optimization',
     },
     {
       id: 2,
@@ -147,7 +226,7 @@ const TimeGameDashboard = () => {
       keyMetric: 'Inventory Risk Reduction',
       problem: 'Retail demand unpredictable. Inventory planning reactive.',
       solution: 'Custom DVI metric + shock detection Power BI dashboard.',
-      github: 'https://github.com/Chetan0075/demand-volatility-index-india',
+      github: 'https://github.com/Chetan0075/demand-volatility-index',
     },
   ];
 
@@ -156,9 +235,26 @@ const TimeGameDashboard = () => {
       <div className="text-center p-6 bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300 group">
         <div className="text-4xl mb-2 group-hover:scale-125 transition-transform">{icon}</div>
         <div className="text-4xl font-bold text-gray-900 mb-1 font-mono tracking-tight">
-          {value.toLocaleString()}
+          {Math.floor(value).toLocaleString()}
         </div>
         <p className="text-sm text-gray-500">{label}</p>
+      </div>
+    );
+  };
+
+  const LiveMetricCard = ({ value, label, icon, color, increment }) => {
+    return (
+      <div
+        className="p-4 bg-white rounded-xl border border-gray-100 text-center hover:shadow-md transition-all group cursor-pointer hover:scale-105"
+      >
+        <div className="text-3xl mb-1 group-hover:scale-125 transition-transform">{icon}</div>
+        <div className="font-bold text-lg font-mono" style={{ color }}>
+          {Math.floor(value).toLocaleString()}
+        </div>
+        <p className="text-xs text-gray-500 mt-1">{label}</p>
+        <div className="text-xs mt-2 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color }}>
+          ⬆️ +{increment}/sec
+        </div>
       </div>
     );
   };
@@ -297,17 +393,21 @@ const TimeGameDashboard = () => {
           }
         }
 
-        @keyframes float {
+        @keyframes pulse {
           0%, 100% {
-            transform: translateY(0px);
+            opacity: 1;
           }
           50% {
-            transform: translateY(-20px);
+            opacity: 0.8;
           }
         }
 
         .animate-in {
           animation: slideUp 0.6s ease-out;
+        }
+
+        .pulse-animation {
+          animation: pulse 2s ease-in-out infinite;
         }
 
         input[type="date"] {
@@ -319,7 +419,7 @@ const TimeGameDashboard = () => {
       {/* TIME GAME SECTION */}
       {showGame && (
         <section className="min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-white via-purple-50 to-white">
-          <div className="max-w-3xl w-full">
+          <div className="max-w-4xl w-full">
             <div className="text-center mb-12 animate-in">
               <h1 className="text-6xl md:text-7xl font-black mb-4">⏰</h1>
               <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
@@ -358,7 +458,7 @@ const TimeGameDashboard = () => {
 
             {dob && (
               <div className="animate-in" style={{ animationDelay: '0.2s' }}>
-                {/* ANALYTICS KPI SECTION */}
+                {/* MAIN ANALYTICS DASHBOARD */}
                 <div className="mb-12 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
                   <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
                     <TrendingUp size={24} className="text-purple-600" />
@@ -366,7 +466,7 @@ const TimeGameDashboard = () => {
                   </h3>
 
                   {/* Main Counter Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12 pb-12 border-b border-gray-100">
                     <AnimatedCounter
                       value={displayedStats.years}
                       label="Years Lived"
@@ -399,35 +499,65 @@ const TimeGameDashboard = () => {
                     />
                   </div>
 
-                  {/* Chart & Stats */}
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                      <h4 className="text-sm font-bold text-gray-600 mb-4 flex items-center gap-2">
-                        <TrendingUp size={16} />
-                        Time Distribution
-                      </h4>
-                      <div style={{ position: 'relative', height: '250px' }}>
-                        <canvas ref={chartRef}></canvas>
+                  {/* Life Span Comparison Charts */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-2">
+                      <Activity size={20} className="text-purple-600" />
+                      Your Life Span vs Average Human Lifespan
+                    </h4>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {/* Life Progress Bar Chart */}
+                      <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                        <h5 className="text-sm font-bold text-gray-600 mb-4">Years Lived vs Remaining</h5>
+                        <div style={{ position: 'relative', height: '200px' }}>
+                          <canvas ref={chartRef1}></canvas>
+                        </div>
+                        <div className="mt-4 text-center text-sm text-gray-600">
+                          <p>
+                            <span className="font-bold text-purple-600">{lifeProgress.currentYears}</span> out of{' '}
+                            <span className="font-bold">{lifeProgress.averageLifespan}</span> years
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Life Percentage Doughnut Chart */}
+                      <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                        <h5 className="text-sm font-bold text-gray-600 mb-4">Life Progress</h5>
+                        <div style={{ position: 'relative', height: '200px' }}>
+                          <canvas ref={chartRef2}></canvas>
+                        </div>
+                        <div className="mt-4 text-center text-sm text-gray-600">
+                          <p>
+                            <span className="font-bold text-purple-600">{Math.round(lifeProgress.percentageLived)}%</span> of average lifespan completed
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {Math.round(lifeProgress.yearsRemaining)} years remaining (if average lifespan)
+                          </p>
+                        </div>
                       </div>
                     </div>
+                  </div>
 
-                    {/* KPI Cards */}
-                    <div className="space-y-3">
+                  {/* KPI Cards */}
+                  <div className="mb-12 pb-12 border-b border-gray-100">
+                    <h4 className="text-lg font-bold mb-4">Key Life Metrics</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-2xl p-4 border border-purple-200 hover:shadow-md transition-all">
                         <p className="text-sm text-gray-600 mb-1">Total Hours Lived</p>
-                        <p className="text-4xl font-bold text-purple-700">
+                        <p className="text-3xl font-bold text-purple-700">
                           {((displayedStats.days * 24) + displayedStats.hours).toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-4 border border-blue-200 hover:shadow-md transition-all">
                         <p className="text-sm text-gray-600 mb-1">Total Minutes Lived</p>
-                        <p className="text-4xl font-bold text-blue-700">
+                        <p className="text-3xl font-bold text-blue-700">
                           {(((displayedStats.days * 24) + displayedStats.hours) * 60 + displayedStats.minutes).toLocaleString()}
                         </p>
                       </div>
                       <div className="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl p-4 border border-pink-200 hover:shadow-md transition-all">
                         <p className="text-sm text-gray-600 mb-1">Books You Could Read</p>
-                        <p className="text-4xl font-bold text-pink-700">
+                        <p className="text-3xl font-bold text-pink-700">
                           {Math.floor(displayedStats.days / 7).toLocaleString()}
                         </p>
                       </div>
@@ -435,26 +565,68 @@ const TimeGameDashboard = () => {
                   </div>
                 </div>
 
-                {/* Perspective Metrics */}
-                <div className="mb-12">
-                  <h3 className="text-2xl font-bold mb-6 text-center">Your Time in Perspective</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {[
-                      { label: 'Movies', value: Math.floor(displayedStats.days / 4), icon: '🎬', color: '#8b5cf6' },
-                      { label: 'Coffee Cups', value: Math.floor(displayedStats.days * 2), icon: '☕', color: '#92400e' },
-                      { label: 'Heartbeats', value: Math.floor(displayedStats.days * 86400 * 1.2), icon: '❤️', color: '#ec4899' },
-                      { label: 'Breaths', value: Math.floor(displayedStats.days * 86400 * 16), icon: '💨', color: '#06b6d4' },
-                      { label: 'Steps', value: Math.floor(displayedStats.days * 10000), icon: '👣', color: '#3b82f6' },
-                      { label: 'Words Spoken', value: Math.floor(displayedStats.days * 16000), icon: '💬', color: '#10b981' },
-                    ].map((item, i) => (
-                      <div key={i} className="p-4 bg-white rounded-xl border border-gray-100 text-center hover:shadow-md transition-all">
-                        <div className="text-3xl mb-1">{item.icon}</div>
-                        <div className="font-bold text-lg" style={{ color: item.color }}>
-                          {item.value.toLocaleString()}
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">{item.label}</p>
-                      </div>
-                    ))}
+                {/* YOUR TIME IN PERSPECTIVE - REAL-TIME INCREMENTING */}
+                <div className="mb-12 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+                  <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
+                    <Zap size={24} className="text-orange-600" />
+                    Your Time in Perspective (Real-Time Updates ⚡)
+                  </h3>
+
+                  <div className="mb-6 p-4 bg-green-50 rounded-xl border border-green-200">
+                    <p className="text-sm text-green-900">
+                      ✅ <span className="font-semibold">Watch the numbers INCREASE in real-time!</span> Each metric counts up continuously as you live. Your heartbeats, breaths, steps, and words are updating RIGHT NOW!
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    <LiveMetricCard
+                      value={liveMetrics.heartbeats}
+                      label="Heartbeats"
+                      icon="❤️"
+                      color="#ec4899"
+                      increment="1.2"
+                    />
+                    <LiveMetricCard
+                      value={liveMetrics.breaths}
+                      label="Breaths Taken"
+                      icon="💨"
+                      color="#06b6d4"
+                      increment="0.27"
+                    />
+                    <LiveMetricCard
+                      value={liveMetrics.steps}
+                      label="Steps Walked"
+                      icon="👣"
+                      color="#3b82f6"
+                      increment="0.12"
+                    />
+                    <LiveMetricCard
+                      value={liveMetrics.words}
+                      label="Words Spoken"
+                      icon="💬"
+                      color="#10b981"
+                      increment="0.19"
+                    />
+                    <LiveMetricCard
+                      value={Math.floor(displayedStats.days / 4)}
+                      label="Movies Watched"
+                      icon="🎬"
+                      color="#8b5cf6"
+                      increment="0.006"
+                    />
+                    <LiveMetricCard
+                      value={Math.floor(displayedStats.days * 2)}
+                      label="Coffee Cups"
+                      icon="☕"
+                      color="#92400e"
+                      increment="0.023"
+                    />
+                  </div>
+
+                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                    <p className="text-sm text-blue-900">
+                      💡 <span className="font-semibold">Real-time calculation:</span> The metrics increment every second based on realistic daily averages. Heartbeats (~72/min), Breaths (~16/min), Steps (~10,000/day), Words (~16,000/day)
+                    </p>
                   </div>
                 </div>
 
@@ -463,7 +635,7 @@ const TimeGameDashboard = () => {
                   {!forceUnlock && unlockedProjects.size < 3 && (
                     <button
                       onClick={() => setForceUnlock(true)}
-                      className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold hover:shadow-lg transition-all duration-300 hover:scale-105 mb-4"
+                      className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold hover:shadow-lg transition-all duration-300 hover:scale-105 mb-4 pulse-animation"
                     >
                       <Unlock size={20} />
                       🔓 Unlock Full Portfolio
