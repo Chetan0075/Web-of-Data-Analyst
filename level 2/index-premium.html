@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chetan Suraswal - Data Analytics Portfolio</title>
+  <link rel="stylesheet" href="styles-premium.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <meta name="description" content="Premium portfolio showcasing data analytics projects and insights">
+  <meta property="og:title" content="Chetan Suraswal - Data Analytics">
+  <meta property="og:description" content="Interactive Time Game Portfolio">
+</head>
+
+<body>
+  <div id="app">
+    <!-- Theme Toggle & Progress Bar -->
+    <div class="theme-controls">
+      <button id="themeToggle" class="theme-toggle" title="Toggle Dark Mode">
+        <span class="toggle-icon">🌙</span>
+      </button>
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <!-- Particle Background -->
+    <div id="particleContainer" class="particle-container"></div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="mainHeader">
+      <div class="header-content">
+        
+        
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero-section" class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content-wrapper">
+          <h1 class="hero-title">
+            <span class="gradient-text">Discover Your Life</span>
+            <br>
+            <span class="subtitle-text">In Numbers</span>
+          </h1>
+          <p class="hero-subtitle">Enter your date of birth to unlock your personal analytics dashboard and see how many
+            days you've lived. Projects unlock based on your life journey.</p>
+
+          <div class="hero-input-section">
+            <div class="input-group">
+              <input type="date" id="dobInput" class="premium-input" max="" placeholder="Select your date of birth">
+              <button id="startBtn" class="premium-button primary-button">
+                <span>Start Experience</span>
+                <span class="button-icon">→</span>
+              </button>
+            </div>
+            <p class="input-helper">All data stays private. No information is stored or shared.</p>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-preview">
+            <div class="stat-number">12,847</div>
+            <div class="stat-label">Days Lived</div>
+          </div>
+          <div class="stat-preview">
+            <div class="stat-number">308K+</div>
+            <div class="stat-label">Hours Lived</div>
+          </div>
+          <div class="stat-preview">
+            <div class="stat-number">35+</div>
+            <div class="stat-label">Years</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Section -->
+    <section id="game-section" class="game-section hidden">
+      <div class="game-container">
+        <!-- Floating Navigation -->
+        <div class="floating-nav">
+          <button id="viewPortfolioBtn" class="nav-button">
+            View Portfolio <span class="icon">→</span>
+          </button>
+        </div>
+
+        <!-- Time Stats Display -->
+        <div class="time-display-card">
+          <h2 class="section-heading">Your Life in Numbers</h2>
+          <div class="time-stats-grid">
+            <div class="time-stat">
+              <div class="time-unit">YEARS</div>
+              <div class="time-value" id="yearsDisplay">0</div>
+            </div>
+            <div class="time-stat">
+              <div class="time-unit">MONTHS</div>
+              <div class="time-value" id="monthsDisplay">0</div>
+            </div>
+            <div class="time-stat">
+              <div class="time-unit">DAYS</div>
+              <div class="time-value" id="daysDisplay">0</div>
+            </div>
+            <div class="time-stat">
+              <div class="time-unit">HOURS</div>
+              <div class="time-value" id="hoursDisplay">0</div>
+            </div>
+            <div class="time-stat">
+              <div class="time-unit">MINUTES</div>
+              <div class="time-value" id="minutesDisplay">0</div>
+            </div>
+            <div class="time-stat">
+              <div class="time-unit">SECONDS</div>
+              <div class="time-value" id="secondsDisplay">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Life Progress Analysis -->
+        <div class="life-analysis-section">
+          <h3 class="section-heading">Life Progress</h3>
+
+          <div class="progress-cards-grid">
+            <div class="progress-card-premium">
+              <div class="card-icon">📊</div>
+              <h4 class="card-title">Current Age</h4>
+              <div class="card-value" id="currentYearsDisplay">0</div>
+              <p class="card-subtitle">years</p>
+            </div>
+
+            <div class="progress-card-premium">
+              <div class="card-icon">⏳</div>
+              <h4 class="card-title">Life Percentage</h4>
+              <div class="card-value" id="percentageLivedDisplay">0%</div>
+              <p class="card-subtitle">of 75-year lifespan</p>
+            </div>
+
+            <div class="progress-card-premium">
+              <div class="card-icon">🎯</div>
+              <h4 class="card-title">Years Remaining</h4>
+              <div class="card-value" id="yearsRemainingDisplay">75</div>
+              <p class="card-subtitle">expected left</p>
+            </div>
+          </div>
+
+          <!-- Charts Section -->
+          <div class="charts-section">
+            <div class="chart-wrapper">
+              <canvas id="lifeProgressChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="ageComparisonChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-showcase">
+          <h3 class="section-heading">Your Milestones</h3>
+          <div class="metrics-cards-grid">
+            <div class="metric-card-premium">
+              <p class="metric-label">Total Hours</p>
+              <p class="metric-value" id="totalHoursDisplay">0</p>
+            </div>
+            <div class="metric-card-premium">
+              <p class="metric-label">Total Minutes</p>
+              <p class="metric-value" id="totalMinutesDisplay">0</p>
+            </div>
+            <div class="metric-card-premium">
+              <p class="metric-label">Books Possible</p>
+              <p class="metric-value" id="booksDisplay">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Metrics Section -->
+        <div class="live-metrics-showcase">
+          <h3 class="section-heading">Real-Time Activity</h3>
+          <p class="section-description">Watch as your life unfolds in real numbers. Every second counts.</p>
+
+          <div class="live-metrics-grid" id="liveMetricsGrid">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Achievements Section -->
+        <div class="achievements-showcase">
+          <h3 class="section-heading">Milestones Achieved</h3>
+          <div class="achievements-grid">
+            <div class="achievement-badge" id="achievement-1000">
+              <div class="achievement-icon">🎂</div>
+              <p class="achievement-name">1,000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-5000">
+              <div class="achievement-icon">⭐</div>
+              <p class="achievement-name">5,000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-7000">
+              <div class="achievement-icon">💎</div>
+              <p class="achievement-name">7,000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-9000">
+              <div class="achievement-icon">👑</div>
+              <p class="achievement-name">9,000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-10000">
+              <div class="achievement-icon">🔥</div>
+              <p class="achievement-name">10,000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-all-unlocked">
+              <div class="achievement-icon">🎉</div>
+              <p class="achievement-name">All Unlocked</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unlock Section -->
+        <div class="unlock-showcase">
+          <div id="unlockBtn" class="premium-button unlock-button">
+            <span>🔓 Unlock All Projects</span>
+          </div>
+          <div id="unlockSuccess" class="unlock-success-message hidden">
+            <span class="success-icon">✓</span>
+            <span>All Projects Unlocked!</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Portfolio Section -->
+    <section id="portfolio-section" class="portfolio-section hidden">
+      <div class="portfolio-container">
+        <div class="portfolio-header">
+          <h2 class="portfolio-main-title">Featured Work</h2>
+          <p class="portfolio-description">
+            <span id="unlockedCount">0</span> of 3 projects unlocked
+          </p>
+        </div>
+
+        <div id="projectsContainer" class="projects-showcase">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Tech Stack Section -->
+        <div class="tech-expertise-section">
+          <h3 class="section-heading">Expertise & Tools</h3>
+          <div class="tech-stack-grid">
+            <div class="tech-item">
+              <span class="tech-icon">📊</span>
+              <span class="tech-name">Power BI</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-icon">🐍</span>
+              <span class="tech-name">Python</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-icon">📈</span>
+              <span class="tech-name">SQL</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-icon">🤖</span>
+              <span class="tech-name">Machine Learning</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-icon">📑</span>
+              <span class="tech-name">Data Analysis</span>
+            </div>
+            <div class="tech-item">
+              <span class="tech-icon">⚙️</span>
+              <span class="tech-name">Optimization</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div id="contact" class="contact-showcase">
+          <h3 class="section-heading">Get In Touch</h3>
+          <p class="section-description">
+            Have a data project in mind? Let's create something amazing together.
+          </p>
+          <div class="contact-buttons-group">
+            <a href="mailto:chetanyt303@gmail.com" class="premium-button contact-button">
+              <span class="button-icon">✉️</span> Email Me
+            </a>
+            <a href="https://github.com/Chetan0075" target="_blank" rel="noopener noreferrer"
+              class="premium-button contact-button secondary">
+              <span class="button-icon">🔗</span> GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/chetan-suraswal/" target="_blank" rel="noopener noreferrer"
+              class="premium-button contact-button secondary">
+              <span class="button-icon">💼</span> LinkedIn
+            </a>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="back-to-game-section">
+          <button id="backToGameBtn" class="back-button">← Back to Time Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="footer-text">© 2024 Chetan Suraswal • Data Analytics • Time Game Portfolio</p>
+      <p class="footer-subtext">Crafted with attention to detail</p>
+    </footer>
+  </div>
+
+  <script src="script-premium.js"></script>
+</body>
+
+</html>
