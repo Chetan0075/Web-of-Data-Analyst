@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRX Analytics - Time Game Portfolio</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Hero Section -->
+    <section id="hero-section" class="hero-section">
+      <div class="hero-container">
+        <h1 class="hero-title">Enter Your Date of Birth</h1>
+        <p class="hero-subtitle">Discover how many <span class="highlight">days, hours, minutes</span> you've lived. Unlock projects based on your life journey.</p>
+        
+        <div class="hero-content">
+          <div class="dob-input-wrapper">
+            <input type="date" id="dobInput" class="dob-input" max="">
+            <button id="startBtn" class="start-button">Start My Time Game</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Section -->
+    <section id="game-section" class="game-section hidden">
+      <div class="game-container">
+        <!-- Back button -->
+        <div class="back-button-container">
+          <button id="viewPortfolioBtn" class="view-portfolio-btn">View My Portfolio →</button>
+        </div>
+
+        <!-- Time Stats Display -->
+        <div class="time-stats-wrapper">
+          <h2 class="stats-title">⏱️ Your Life in Time</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Years</div>
+              <div class="stat-value" id="yearsDisplay">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Months</div>
+              <div class="stat-value" id="monthsDisplay">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Days</div>
+              <div class="stat-value" id="daysDisplay">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Hours</div>
+              <div class="stat-value" id="hoursDisplay">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Minutes</div>
+              <div class="stat-value" id="minutesDisplay">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Seconds</div>
+              <div class="stat-value" id="secondsDisplay">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Life Progress Section -->
+        <div class="life-progress-section">
+          <h3 class="section-title">📊 Life Progress Analysis</h3>
+          
+          <div class="progress-grid">
+            <div class="progress-card">
+              <div class="progress-content">
+                <h4 class="progress-card-title">Your Current Age</h4>
+                <div class="progress-value" id="currentYearsDisplay">0</div>
+                <p class="progress-subtitle">Years Lived</p>
+              </div>
+            </div>
+
+            <div class="progress-card">
+              <div class="progress-content">
+                <h4 class="progress-card-title">Life Percentage</h4>
+                <div class="progress-value" id="percentageLivedDisplay">0%</div>
+                <p class="progress-subtitle">Of Average 75-Year Lifespan</p>
+              </div>
+            </div>
+
+            <div class="progress-card">
+              <div class="progress-content">
+                <h4 class="progress-card-title">Years Remaining</h4>
+                <div class="progress-value" id="yearsRemainingDisplay">75</div>
+                <p class="progress-subtitle">Expected Lifespan Left</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-grid">
+            <div class="chart-container">
+              <canvas id="lifeProgressChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <canvas id="ageComparisonChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Key Life Metrics -->
+        <div class="metrics-section">
+          <h4 class="metrics-title">Key Life Metrics</h4>
+          <div class="metrics-grid">
+            <div class="metric-card metric-purple">
+              <p class="metric-label">Total Hours Lived</p>
+              <p class="metric-value" id="totalHoursDisplay">0</p>
+            </div>
+            <div class="metric-card metric-blue">
+              <p class="metric-label">Total Minutes Lived</p>
+              <p class="metric-value" id="totalMinutesDisplay">0</p>
+            </div>
+            <div class="metric-card metric-pink">
+              <p class="metric-label">Books You Could Read</p>
+              <p class="metric-value" id="booksDisplay">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Metrics -->
+        <div class="realtime-section">
+          <h3 class="section-title">⚡ Your Time in Perspective (Real-Time Updates ⚡)</h3>
+
+          <div class="info-box info-green">
+            <p>✅ <span class="bold">Watch the numbers INCREASE in real-time!</span> Each metric counts up continuously as you live. Your heartbeats, breaths, steps, and words are updating RIGHT NOW!</p>
+          </div>
+
+          <div class="live-metrics-grid" id="liveMetricsGrid">
+            <!-- Populated by JavaScript -->
+          </div>
+
+          <div class="info-box info-blue">
+            <p>💡 <span class="bold">Real-time calculation:</span> The metrics increment every second based on realistic daily averages. Heartbeats (~72/min), Breaths (~16/min), Steps (~10,000/day), Words (~16,000/day)</p>
+          </div>
+        </div>
+
+        <!-- Unlock Button -->
+        <div class="unlock-section">
+          <button id="unlockBtn" class="unlock-button pulse">🔓 Unlock Full Portfolio 🚀</button>
+          <div id="unlockSuccess" class="unlock-success hidden">🔓 ✓ All Projects Unlocked!</div>
+        </div>
+
+        <!-- ⭐ NEW: Achievements Section ⭐ -->
+        <div class="achievements-section">
+          <h3 class="section-title">🏆 Your Achievements</h3>
+          <div class="achievements-grid">
+            <div class="achievement-badge" id="achievement-1000">
+              <div class="achievement-icon">🎂</div>
+              <p class="achievement-text">1000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-5000">
+              <div class="achievement-icon">⭐</div>
+              <p class="achievement-text">5000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-7000">
+              <div class="achievement-icon">💎</div>
+              <p class="achievement-text">7000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-9000">
+              <div class="achievement-icon">👑</div>
+              <p class="achievement-text">9000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-10000">
+              <div class="achievement-icon">🔥</div>
+              <p class="achievement-text">10000 Days</p>
+            </div>
+            <div class="achievement-badge" id="achievement-all-unlocked">
+              <div class="achievement-icon">🎉</div>
+              <p class="achievement-text">All Unlocked!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio-section" class="portfolio-section hidden">
+      <div class="portfolio-container">
+        <div class="portfolio-header">
+          <h2 class="portfolio-title">Game-Changing Work</h2>
+          <p class="portfolio-subtitle"><span id="unlockedCount">0</span> of 3 projects unlocked</p>
+        </div>
+
+        <div id="projectsContainer" class="projects-container">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- ⭐ NEW: Tech Stack Section ⭐ -->
+        <div class="tech-stack-section">
+          <h3 class="tech-stack-title">🛠️ Tech Stack & Expertise</h3>
+          <div class="tech-grid">
+            <div class="tech-badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+              <span class="tech-emoji">📊</span>
+              <span class="tech-name">Power BI</span>
+            </div>
+            <div class="tech-badge" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+              <span class="tech-emoji">🐍</span>
+              <span class="tech-name">Python</span>
+            </div>
+            <div class="tech-badge" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+              <span class="tech-emoji">📈</span>
+              <span class="tech-name">SQL</span>
+            </div>
+            <div class="tech-badge" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+              <span class="tech-emoji">🤖</span>
+              <span class="tech-name">Machine Learning</span>
+            </div>
+            <div class="tech-badge" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+              <span class="tech-emoji">📑</span>
+              <span class="tech-name">Data Analysis</span>
+            </div>
+            <div class="tech-badge" style="background: linear-gradient(135deg, #30cfd0, #330867);">
+              <span class="tech-emoji">⚙️</span>
+              <span class="tech-name">Optimization</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="contact-section">
+          <h3 class="contact-title">Let's Build Something Epic</h3>
+          <p class="contact-subtitle">Have an idea? Let's talk about your next data revolution.</p>
+          <div class="contact-buttons">
+            <a href="mailto:chetanyt303@gmail.com" class="contact-btn contact-btn-primary">
+              ✉️ Email
+            </a>
+            <a href="https://github.com/Chetan0075" target="_blank" rel="noopener noreferrer" class="contact-btn contact-btn-secondary">
+              🔗 GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/chetan-suraswal/" target="_blank" rel="noopener noreferrer" class="contact-btn contact-btn-secondary">
+              💼 LinkedIn
+            </a>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="back-to-game-container">
+          <button id="backToGameBtn" class="back-to-game">← Back to Time Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      © 2024 CRX.ANALYTICS • Yavatmal, Maharashtra • A Time Game Portfolio Experience
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
