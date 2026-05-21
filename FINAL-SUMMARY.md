@@ -29,13 +29,13 @@ BATCH 2: 6 Visual Wow ✅
 TOTAL: 12 INSANE FEATURES ✅
 ```
 
----
+
+
+
+
 
 
 ```
-
-
-
 ## 🎨 **FEATURE HIGHLIGHTS**
 
 ### **Batch 1: Quick Wins**
