@@ -1,1 +1,794 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chetan Suraswal — Data Analyst</title>
+<meta name="description" content="Chetan Suraswal (CRX) — data analyst. Power BI, SQL, Python, DAX. Case studies in sales profitability, workflow optimization, and demand volatility.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FCFCFA;
+    --surface: #F6F3EB;
+    --ink: #16140F;
+    --ink-soft: #6B6660;
+    --ink-faint: #9C9690;
+    --gold: #C9B37E;
+    --gold-deep: #A3895A;
+    --hairline: #E7E2D5;
+    --max: 1180px;
+    --ease: cubic-bezier(.16,.8,.24,1);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-weight:400;
+    line-height:1.5;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    html{scroll-behavior:smooth;}
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  button{font:inherit;background:none;border:0;cursor:pointer;color:inherit;}
+
+  :focus-visible{outline:2px solid var(--gold-deep);outline-offset:3px;border-radius:2px;}
+
+  .mono{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    letter-spacing:.06em;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:.72rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--gold-deep);
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+  }
+  .eyebrow::before{
+    content:'';
+    width:18px;height:1px;
+    background:var(--gold-deep);
+    display:inline-block;
+  }
+
+  .wrap{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:0 clamp(24px,6vw,64px);
+  }
+
+  /* ---------- scroll rail ---------- */
+  .rail{
+    position:fixed;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+    height:240px;
+    width:14px;
+    z-index:60;
+    display:none;
+  }
+  @media (min-width:900px){ .rail{display:block;} }
+  .rail__track{
+    position:absolute;
+    left:50%;
+    top:0;bottom:0;
+    width:1px;
+    background:var(--hairline);
+    transform:translateX(-50%);
+  }
+  .rail__fill{
+    position:absolute;
+    left:50%;
+    top:0;
+    width:1px;
+    background:var(--gold);
+    transform:translateX(-50%);
+    height:0%;
+    transition:height .12s linear;
+  }
+  .rail__dot{
+    position:absolute;
+    left:50%;
+    top:0%;
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 4px var(--bg);
+    transform:translate(-50%,-50%);
+    transition:top .12s linear;
+  }
+
+  /* ---------- mobile top progress ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;right:0;height:2px;z-index:70;
+    background:var(--hairline);
+  }
+  .topbar__fill{height:100%;width:0%;background:var(--gold);transition:width .12s linear;}
+  @media (min-width:900px){ .topbar{display:none;} }
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    border-bottom:1px solid transparent;
+    transition:background .3s var(--ease),border-color .3s var(--ease),backdrop-filter .3s var(--ease);
+  }
+  .nav.is-scrolled{
+    background:rgba(252,252,250,.78);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border-color:var(--hairline);
+  }
+  .nav__inner{
+    display:flex;align-items:center;justify-content:space-between;
+    height:76px;
+  }
+  .nav__mark{
+    font-weight:700;
+    font-size:1rem;
+    letter-spacing:.04em;
+  }
+  .nav__mark span{color:var(--gold-deep);}
+  .nav__links{
+    display:flex;gap:clamp(20px,3vw,40px);
+    font-family:'JetBrains Mono',monospace;
+    font-size:.74rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .nav__links a{
+    position:relative;
+    padding-bottom:6px;
+    color:var(--ink-soft);
+    transition:color .25s var(--ease);
+  }
+  @media (max-width:480px){
+    .nav__mark span{ display:none; }
+    .nav__links{ gap:13px; font-size:.62rem; letter-spacing:.04em; }
+    .nav__inner{ height:64px; }
+  }
+  .nav__links a::after{
+    content:'';
+    position:absolute;left:0;right:100%;bottom:0;height:1px;
+    background:var(--gold-deep);
+    transition:right .3s var(--ease);
+  }
+  .nav__links a:hover,
+  .nav__links a.is-active{ color:var(--ink); }
+  .nav__links a:hover::after,
+  .nav__links a.is-active::after{ right:0; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.85rem 1.5rem;
+    font-size:.85rem;
+    font-weight:500;
+    border-radius:2px;
+    transition:transform .3s var(--ease),background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease);
+  }
+  .btn--primary{
+    background:var(--ink);
+    color:var(--bg);
+  }
+  .btn--primary:hover{ background:var(--gold-deep); transform:translateY(-2px); }
+  .btn--ghost{
+    border:1px solid var(--hairline);
+    color:var(--ink);
+  }
+  .btn--ghost:hover{ border-color:var(--gold-deep); color:var(--gold-deep); transform:translateY(-2px); }
+
+  /* ---------- sections / reveal ---------- */
+  .section{ padding:clamp(80px,12vw,160px) 0; }
+  /* .reveal is fully visible by default — JS adds .pre only if it can also guarantee the reveal */
+  .reveal.pre{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .8s var(--ease),transform .8s var(--ease);
+  }
+  .reveal.pre.is-visible{ opacity:1; transform:translateY(0); }
+
+  .divider{
+    display:flex;align-items:center;gap:3px;
+    padding:0 0 0 0;
+  }
+  .divider span{
+    width:1px;height:10px;background:var(--hairline);
+  }
+  .divider span:nth-child(4n){ background:var(--gold-deep); height:14px; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding-top:96px;
+  }
+  .hero__grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:48px;
+    align-items:center;
+    width:100%;
+  }
+  .hero__eyebrow{ margin-bottom:1.4rem; }
+  .hero__title{
+    font-size:clamp(2.4rem,5.6vw,4.4rem);
+    font-weight:700;
+    letter-spacing:-0.02em;
+    line-height:1.06;
+    max-width:14ch;
+  }
+  .hero__sub{
+    margin-top:1.6rem;
+    max-width:46ch;
+    font-size:1.05rem;
+    color:var(--ink-soft);
+    font-weight:300;
+  }
+  .hero__meta{
+    margin-top:1.4rem;
+    font-size:.78rem;
+    color:var(--ink-faint);
+  }
+  .hero__ctas{
+    margin-top:2.4rem;
+    display:flex;gap:14px;flex-wrap:wrap;
+  }
+  .hero__dial{
+    position:relative;
+    width:min(340px,80vw);
+    margin:0 auto;
+    aspect-ratio:1/1;
+  }
+  .hero__dial svg{ width:100%;height:100%; }
+  .hero__needle{
+    transform-origin:160px 160px;
+    transition:transform .4s var(--ease);
+  }
+  .hero__dial-label{
+    position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+  }
+  .hero__dial-label .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;
+    letter-spacing:.12em;
+    color:var(--ink-faint);
+    display:block;
+  }
+  .hero__dial-label .label{
+    font-size:.7rem;
+    color:var(--ink-soft);
+    display:block;
+    margin-top:2px;
+  }
+  /* responsive overrides must come after the base rules above to win the cascade */
+  @media (max-width:880px){
+    .hero__grid{ grid-template-columns:1fr; }
+    .hero__dial{ order:-1; width:180px;margin:0 auto 8px; }
+  }
+  @media (max-width:480px){
+    .hero{ padding-top:80px; }
+    .hero__dial{ width:140px; margin:0 auto 4px; }
+    .hero__dial-label{ display:none; }
+  }
+
+  /* ---------- work ---------- */
+  .section__head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    gap:24px;flex-wrap:wrap;
+    margin-bottom:clamp(40px,6vw,72px);
+  }
+  .section__title{
+    font-size:clamp(1.7rem,3vw,2.4rem);
+    font-weight:600;
+    letter-spacing:-0.01em;
+    max-width:22ch;
+    margin-top:.6rem;
+  }
+  .section__note{
+    max-width:30ch;
+    font-size:.9rem;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+  @media (max-width:640px){ .section__note{text-align:left;} }
+
+  .case-list{ display:flex;flex-direction:column; }
+  .case{
+    display:grid;
+    grid-template-columns:64px 1fr 200px 130px;
+    gap:28px;
+    align-items:center;
+    padding:34px 0;
+    border-top:1px solid var(--hairline);
+    transition:background .35s var(--ease);
+  }
+  .case:last-child{ border-bottom:1px solid var(--hairline); }
+  .case:hover{ background:var(--surface); }
+  .case__index{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.78rem;
+    color:var(--ink-faint);
+  }
+  .case__title{
+    font-size:1.1rem;
+    font-weight:600;
+    margin-bottom:.5rem;
+  }
+  .case__desc{
+    font-size:.92rem;
+    color:var(--ink-soft);
+    max-width:56ch;
+  }
+  .case__tools{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    letter-spacing:.04em;
+    color:var(--gold-deep);
+    margin-top:.7rem;
+    display:block;
+  }
+  .case__signal{ width:100%;height:40px;opacity:.9; }
+  .case__signal path,.case__signal line,.case__signal rect{
+    transition:opacity .3s var(--ease);
+  }
+  .case__link{
+    justify-self:end;
+    font-size:.82rem;
+    font-weight:500;
+    white-space:nowrap;
+    border-bottom:1px solid var(--hairline);
+    padding-bottom:4px;
+    transition:border-color .3s var(--ease),color .3s var(--ease);
+  }
+  .case:hover .case__link{ border-color:var(--gold-deep); color:var(--gold-deep); }
+
+  @media (max-width:880px){
+    .case{ grid-template-columns:1fr; gap:14px; padding:28px 0; }
+    .case__signal{ width:120px; }
+    .case__link{ justify-self:start; }
+  }
+
+  /* ---------- approach ---------- */
+  .approach{ background:var(--surface); }
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+  }
+  .step{
+    background:var(--surface);
+    padding:32px 26px;
+    position:relative;
+  }
+  .step__index{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.74rem;
+    color:var(--gold-deep);
+  }
+  .step__title{
+    font-size:1.02rem;
+    font-weight:600;
+    margin-top:.9rem;
+  }
+  .step__desc{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    margin-top:.5rem;
+    line-height:1.55;
+  }
+  @media (max-width:880px){
+    .steps{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:560px){
+    .steps{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- about ---------- */
+  .about__grid{
+    display:grid;
+    grid-template-columns:.9fr 1.1fr;
+    gap:56px;
+    align-items:start;
+  }
+  @media (max-width:880px){ .about__grid{ grid-template-columns:1fr; gap:32px; } }
+  .about__word{
+    font-size:clamp(2.6rem,7vw,5.2rem);
+    font-weight:700;
+    letter-spacing:-0.03em;
+    line-height:.95;
+    color:var(--ink);
+  }
+  @supports (-webkit-text-stroke: 1px black){
+    .about__word{
+      color:transparent;
+      -webkit-text-stroke:1.4px var(--ink);
+    }
+  }
+  .about__body p{
+    font-size:1rem;
+    color:var(--ink-soft);
+    max-width:54ch;
+    margin-bottom:1.1rem;
+  }
+  .about__body strong{ color:var(--ink); font-weight:600; }
+  .tool-grid{
+    margin-top:1.8rem;
+    display:flex;flex-wrap:wrap;gap:10px;
+  }
+  .tool{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.04em;
+    padding:.5rem .85rem;
+    border:1px solid var(--hairline);
+    border-radius:2px;
+    color:var(--ink-soft);
+    transition:border-color .3s var(--ease),color .3s var(--ease);
+  }
+  .tool:hover{ border-color:var(--gold-deep); color:var(--gold-deep); }
+
+  /* ---------- footer / contact ---------- */
+  .footer{
+    border-top:1px solid var(--hairline);
+    padding:clamp(70px,10vw,120px) 0 40px;
+  }
+  .footer__title{
+    font-size:clamp(2rem,5vw,3.4rem);
+    font-weight:700;
+    letter-spacing:-0.02em;
+    max-width:16ch;
+  }
+  .footer__links{
+    margin-top:2.4rem;
+    display:flex;gap:32px;flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.82rem;
+  }
+  .footer__links a{
+    color:var(--ink-soft);
+    border-bottom:1px solid var(--hairline);
+    padding-bottom:4px;
+    transition:color .3s var(--ease),border-color .3s var(--ease);
+  }
+  .footer__links a:hover{ color:var(--gold-deep); border-color:var(--gold-deep); }
+  .footer__bottom{
+    margin-top:80px;
+    padding-top:24px;
+    border-top:1px solid var(--hairline);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-size:.74rem;
+    color:var(--ink-faint);
+    font-family:'JetBrains Mono',monospace;
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar"><div class="topbar__fill" id="topbarFill"></div></div>
+
+  <div class="rail" aria-hidden="true">
+    <div class="rail__track"></div>
+    <div class="rail__fill" id="railFill"></div>
+    <div class="rail__dot" id="railDot"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <div class="wrap nav__inner">
+      <a href="#top" class="nav__mark">CRX<span>.ANALYTICS</span></a>
+      <div class="nav__links" id="navLinks">
+        <a href="#work" data-nav="work">Work</a>
+        <a href="#approach" data-nav="approach">Approach</a>
+        <a href="#about" data-nav="about">About</a>
+        <a href="#contact" data-nav="contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero wrap">
+      <div class="hero__grid">
+        <div>
+          <p class="eyebrow">Data Analyst — Yavatmal, India</p>
+          <h1 class="hero__title">I build dashboards that make businesses act differently.</h1>
+          <p class="hero__sub">I turn raw sales, operations, and demand data into models people can actually act on — using Power BI, SQL, Python, and DAX to find what's really happening inside a business.</p>
+          <p class="hero__meta mono">CHETAN SURASWAL · BCA · CRX.ANALYTICS</p>
+          <div class="hero__ctas">
+            <a href="#work" class="btn btn--primary">View case studies</a>
+            <a href="#contact" class="btn btn--ghost">Get in touch</a>
+          </div>
+        </div>
+
+        <div class="hero__dial" id="heroDial">
+          <svg viewBox="0 0 320 320" aria-hidden="true">
+            <circle cx="160" cy="160" r="156" fill="none" stroke="var(--hairline)" stroke-width="1"/>
+            <line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(0.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(7.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(15.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(22.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(30.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(37.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(45.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(52.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(60.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(67.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(75.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(82.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(90.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(97.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(105.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(112.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(120.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(127.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(135.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(142.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(150.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(157.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(165.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(172.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(180.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(187.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(195.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(202.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(210.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(217.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(225.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(232.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(240.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(247.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(255.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(262.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(270.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(277.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(285.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(292.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(300.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(307.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(315.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(322.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="36" stroke="var(--gold)" stroke-width="1.6" stroke-opacity="0.9" transform="rotate(330.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(337.5 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(345.0 160 160)"/>
+<line x1="160" y1="12" x2="160" y2="26" stroke="var(--gold)" stroke-width="0.8" stroke-opacity="0.4" transform="rotate(352.5 160 160)"/>
+            <g class="hero__needle" id="heroNeedle">
+              <line x1="160" y1="160" x2="160" y2="56" stroke="var(--gold-deep)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="160" cy="160" r="5" fill="var(--gold-deep)"/>
+            </g>
+          </svg>
+          <div class="hero__dial-label">
+            <span class="num">POWER BI · SQL</span>
+            <span class="label">Python · DAX · Excel</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="section" id="work">
+      <div class="wrap">
+        <div class="section__head reveal">
+          <div>
+            <p class="eyebrow">Selected Work</p>
+            <h2 class="section__title">Three problems. Three models. Three decisions changed.</h2>
+          </div>
+          <p class="section__note">Each case study starts with a real business question, not a dataset looking for a use.</p>
+        </div>
+
+        <div class="case-list">
+
+          <div class="case reveal">
+            <span class="case__index mono">01</span>
+            <div>
+              <h3 class="case__title">Sales Performance &amp; Profitability Analysis</h3>
+              <p class="case__desc">Built a profitability model across product categories, segments, and regions on the Superstore dataset — surfacing where margin was actually being made, and where it was quietly being lost.</p>
+              <span class="case__tools">POWER BI · DAX · PYTHON · SQL</span>
+            </div>
+            <svg class="case__signal" viewBox="0 0 72 40" aria-hidden="true">
+              <rect x="4" y="20" width="10" height="16" fill="none" stroke="var(--gold-deep)" stroke-width="1.6"/>
+              <rect x="20" y="10" width="10" height="26" fill="none" stroke="var(--gold-deep)" stroke-width="1.6"/>
+              <rect x="36" y="26" width="10" height="10" fill="none" stroke="var(--gold-deep)" stroke-width="1.6" opacity=".5"/>
+              <rect x="52" y="4" width="10" height="32" fill="var(--gold-deep)"/>
+            </svg>
+            <a href="https://chetan0075.github.io/Web-of-dashboards/" class="case__link">View case study →</a>
+          </div>
+
+          <div class="case reveal">
+            <span class="case__index mono">02</span>
+            <div>
+              <h3 class="case__title">Workflow Delay &amp; Resource Optimization</h3>
+              <p class="case__desc">Modeled where operational workflows lose time, then used predictive scoring to flag delay risk before it happens — turning a reactive process into a monitored one.</p>
+              <span class="case__tools">SQL · PYTHON · MACHINE LEARNING · POWER BI</span>
+            </div>
+            <svg class="case__signal" viewBox="0 0 72 36" aria-hidden="true">
+              <path d="M2,26 L14,26 L14,10 L28,10 L28,30 L42,30 L42,14 L58,14 L58,24 L70,24" fill="none" stroke="var(--gold-deep)" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="14" cy="10" r="2.6" fill="var(--gold-deep)"/>
+              <circle cx="42" cy="30" r="2.6" fill="var(--gold-deep)"/>
+            </svg>
+            <a href="https://chetan0075.github.io/Web-of-dashboards/" class="case__link">View case study →</a>
+          </div>
+
+          <div class="case reveal">
+            <span class="case__index mono">03</span>
+            <div>
+              <h3 class="case__title">Demand Volatility Index (DVI)</h3>
+              <p class="case__desc">Designed an index that quantifies how unpredictable demand is for a product line — giving planning teams an early signal instead of a quarterly surprise.</p>
+              <span class="case__tools">EXCEL · POWER BI · DAX</span>
+            </div>
+            <svg class="case__signal" viewBox="0 0 70 36" aria-hidden="true">
+              <path d="M2,18 L8,30 L14,6 L20,26 L26,10 L32,22 L38,16 L44,18 L50,17 L56,18 L62,17 L68,18" fill="none" stroke="var(--gold-deep)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+            </svg>
+            <a href="https://chetan0075.github.io/Web-of-dashboards/" class="case__link">View case study →</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- APPROACH -->
+    <section class="section approach" id="approach">
+      <div class="wrap">
+        <div class="section__head reveal">
+          <div>
+            <p class="eyebrow">How I Work</p>
+            <h2 class="section__title">Same process, every time. That's the point.</h2>
+          </div>
+        </div>
+
+        <div class="steps reveal">
+          <div class="step">
+            <span class="step__index mono">01 / DEFINE</span>
+            <h3 class="step__title">Ask the real question</h3>
+            <p class="step__desc">Before a chart exists, I find out what decision it needs to support — and who's actually making it.</p>
+          </div>
+          <div class="step">
+            <span class="step__index mono">02 / MODEL</span>
+            <h3 class="step__title">Build the data model</h3>
+            <p class="step__desc">SQL and Python to clean and shape the data; DAX to encode the business logic correctly, once.</p>
+          </div>
+          <div class="step">
+            <span class="step__index mono">03 / VISUALIZE</span>
+            <h3 class="step__title">Design the signal</h3>
+            <p class="step__desc">A Power BI dashboard built to show what changed and why — not just what the numbers are today.</p>
+          </div>
+          <div class="step">
+            <span class="step__index mono">04 / ACT</span>
+            <h3 class="step__title">Hand off a decision</h3>
+            <p class="step__desc">Every dashboard ships with a point of view: here's what I'd do next, and why.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+      <div class="wrap about__grid">
+        <div class="reveal">
+          <p class="about__word">CRX</p>
+        </div>
+        <div class="about__body reveal">
+          <p class="eyebrow" style="margin-bottom:1.4rem;">About</p>
+          <p>I'm <strong>Chetan Suraswal</strong> — a BCA student based in Yavatmal, Maharashtra, building toward a career in data analytics, with a focus on e-commerce, sales, and revenue operations.</p>
+          <p>I write and post analytics breakdowns on LinkedIn under the name <strong>CRX.ANALYTICS</strong> — usually where data meets something I actually care about, like cricket and the IPL.</p>
+          <p>I care less about pretty charts and more about whether a dashboard changes what someone does next. That's the bar for everything I ship.</p>
+          <div class="tool-grid">
+            <span class="tool">POWER BI</span>
+            <span class="tool">SQL</span>
+            <span class="tool">PYTHON</span>
+            <span class="tool">DAX</span>
+            <span class="tool">EXCEL</span>
+            <span class="tool">MACHINE LEARNING</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER / CONTACT -->
+  <footer class="footer" id="contact">
+    <div class="wrap">
+      <p class="eyebrow" style="margin-bottom:1.4rem;">Contact</p>
+      <h2 class="footer__title reveal">Have a dataset that needs an answer? Let's talk.</h2>
+      <div class="footer__links reveal">
+        <a href="mailto:chetanyt303@gmail.com">chetanyt303@gmail.com</a>
+        <a href="https://github.com/Chetan0075" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/chetan-suraswal/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 CRX.ANALYTICS</span>
+        <span>YAVATMAL, MAHARASHTRA</span>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // nav glass + active link + scroll progress
+  var nav = document.getElementById('nav');
+  var topbarFill = document.getElementById('topbarFill');
+  var railFill = document.getElementById('railFill');
+  var railDot = document.getElementById('railDot');
+  var navLinks = document.querySelectorAll('.nav__links a');
+
+  function onScroll(){
+    var y = window.scrollY || document.documentElement.scrollTop;
+    nav.classList.toggle('is-scrolled', y > 8);
+
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? Math.min(100, Math.max(0,(y/max)*100)) : 0;
+    topbarFill.style.width = pct + '%';
+    railFill.style.height = pct + '%';
+    railDot.style.top = pct + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // active section highlighting
+  var sections = ['work','approach','about','contact'].map(function(id){return document.getElementById(id);});
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        navLinks.forEach(function(a){
+          a.classList.toggle('is-active', a.dataset.nav === entry.target.id);
+        });
+      }
+    });
+  }, {rootMargin:'-45% 0px -45% 0px'});
+  sections.forEach(function(s){ if(s) io.observe(s); });
+
+  // reveal on scroll — visible by default; only arm the hidden/animate state if IntersectionObserver exists
+  var revealEls = document.querySelectorAll('.reveal');
+  if(!reduced && 'IntersectionObserver' in window){
+    revealEls.forEach(function(el){ el.classList.add('pre'); });
+    var rio = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          rio.unobserve(entry.target);
+        }
+      });
+    }, {threshold:.15});
+    revealEls.forEach(function(el){ rio.observe(el); });
+  }
+
+  // hero dial needle — subtle parallax tilt on pointer move, slow idle drift otherwise
+  var needle = document.getElementById('heroNeedle');
+  var dial = document.getElementById('heroDial');
+  if(needle && dial && !reduced && window.matchMedia('(hover:hover)').matches){
+    dial.addEventListener('mousemove', function(e){
+      var r = dial.getBoundingClientRect();
+      var dx = (e.clientX - r.left)/r.width - 0.5;
+      var deg = dx * 50;
+      needle.style.transform = 'rotate(' + deg + 'deg)';
+    });
+    dial.addEventListener('mouseleave', function(){
+      needle.style.transform = 'rotate(0deg)';
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
